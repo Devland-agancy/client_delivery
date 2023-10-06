@@ -1,12 +1,41 @@
 import React from "react";
-import { View, Image, StyleSheet, Text, ScrollView } from "react-native";
-import { TextInput, Checkbox, Button } from "react-native-paper";
-import { Link } from "react-router-native";
+import { View, Image, Text, ScrollView } from "react-native";
+import { TextInput, Button } from "react-native-paper";
 import { useTranslation } from "react-i18next";
+import { useForm, Controller } from "react-hook-form";
+import { useNavigate } from "react-router-native";
+import axios from "./../../API/Axios";
 import signUpImage from "../../assets/imgs/signup.png";
 
 const SignUp = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      first_name: "Youcef",
+      last_name: "Bounoua",
+      role: "CLIENT",
+      email: "y.bounoua@esi-sba.dz",
+      phone: "",
+      password1: "",
+      password2: "",
+    },
+  });
+  async function createUser(values) {
+    try {
+      const response = await axios.post("authentication/register/", values);
+      if (response.status === 200 || response.status === 201) {
+        navigate("/confirmationCode");
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
   return (
     <ScrollView
       className="w-full"
@@ -18,34 +47,78 @@ const SignUp = () => {
       <View className="flex-1 items-center">
         <Image source={signUpImage} className="h-[40%] mt-10 w-[80%]" />
         <Text className="font-normal text-lg">{t("signup_title")}</Text>
-        <TextInput
-          className="w-[90%] mt-2"
-          outlineColor="#79747E"
-          activeOutlineColor="#FF6D00CC"
-          mode="outlined"
-          label={t("phone_number")}
-          placeholder={t("enter_number")}
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+            pattern: /\+213\d{9}/ || "Password do not match",
+          }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              className="w-[90%] mt-2"
+              outlineColor="#79747E"
+              activeOutlineColor="#FF6D00CC"
+              mode="outlined"
+              label={t("phone_number")}
+              placeholder={t("enter_number")}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
+          name="phone"
         />
-        <TextInput
-          className="w-[90%] mt-2"
-          outlineColor="#79747E"
-          activeOutlineColor="#FF6D00CC"
-          mode="outlined"
-          label={t("password")}
-          placeholder={t("enter_password")}
+        {errors.phone && <Text className="text-red-600">{t("phone_err")}</Text>}
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+            minLength: 6,
+          }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              className="w-[90%] mt-2"
+              outlineColor="#79747E"
+              activeOutlineColor="#FF6D00CC"
+              mode="outlined"
+              label={t("password")}
+              placeholder={t("enter_password")}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
+          name="password1"
         />
-        <TextInput
-          className="w-[90%] mt-2"
-          outlineColor="#79747E"
-          activeOutlineColor="#FF6D00CC"
-          mode="outlined"
-          label={t("confirm_pwd")}
-          placeholder={t("confirm_your_pwd")}
+        {errors.password1 && (
+          <Text className="text-red-600">{t("password_err")}</Text>
+        )}
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+            minLength: 6,
+            validate: (value) => value === watch("password1"),
+          }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              className="w-[90%] mt-2"
+              outlineColor="#79747E"
+              activeOutlineColor="#FF6D00CC"
+              mode="outlined"
+              label={t("confirm_pwd")}
+              placeholder={t("confirm_your_pwd")}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
+          name="password2"
         />
+        {errors.password2 && (
+          <Text className="text-red-600">{t("confirm_err")}</Text>
+        )}
         <Button
           className="w-[90%] mt-2 bg-[#FF6D00]"
           mode="contained"
-          onPress={() => console.log("Pressed")}
+          onPress={handleSubmit(createUser)}
         >
           {t("sign_up")}
         </Button>
@@ -54,7 +127,7 @@ const SignUp = () => {
           textColor="#FF6D00CC"
           className="w-[90%] mt-2"
           mode="outlined"
-          onPress={() => console.log("Pressed")}
+          onPress={() => navigate("/")}
         >
           {t("sign_in")}
         </Button>

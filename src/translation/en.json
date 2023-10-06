@@ -31,5 +31,11 @@
     "setup_profile": "Setup my profile",
     "skip_now": "Skip for now",
     "copyright": "Copyright © 2023 Delivery app. All rights reserved | FAQ | Terms & Conditions",
-    "by_creating_account": "By creating an account you are agreeing to our Terms and conditions"
+    "by_creating_account": "By creating an account you are agreeing to our Terms and conditions",
+    "phone_err": "Wrong phone number",
+    "password_err": "Minimum length is 6 characters",
+    "confirm_err": "Passwords don't match",
+    "otp_code_required": "OTP code required",
+    "min_6": "Code must be 6 characters",
+    "wrong_otp": "Wrong Code!"
 }

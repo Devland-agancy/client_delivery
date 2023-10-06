@@ -1,12 +1,46 @@
-import React from "react";
-import { View, Image, StyleSheet, Text, ScrollView } from "react-native";
-import { TextInput, Checkbox, Button } from "react-native-paper";
-import { Link } from "react-router-native";
+import React, { useState } from "react";
+import { View, Image, Text, ScrollView } from "react-native";
+import { TextInput, Button } from "react-native-paper";
 import { useTranslation } from "react-i18next";
+import { useForm, Controller } from "react-hook-form";
+import { useNavigate } from "react-router-native";
+import axios from "./../../API/Axios";
 import confirmPwdImage from "../../assets/imgs/confirm_code.png";
 
 const ConfirmationCode = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [err, setErr] = useState("");
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: "y.bounoua@esi-sba.dz",
+      otp: "",
+    },
+  });
+
+  async function sendOtp(values) {
+    try {
+      const response = await axios.post("authentication/otp/check/", values);
+      console.log("response: ", response?.data);
+      if (response?.data) {
+        navigate("/");
+      }
+    } catch (error) {
+      setErr(error?.message);
+    }
+  }
+  async function resendOtp() {
+    try {
+      const response = await axios.post("authentication/otp/resend/");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <ScrollView
       className="w-full"
@@ -20,18 +54,46 @@ const ConfirmationCode = () => {
         <Text className="font-normal text-lg text-center mx-4">
           {t("confirmation_title")}
         </Text>
-        <TextInput
-          className="w-[90%] mt-8"
-          outlineColor="#79747E"
-          activeOutlineColor="#FF6D00CC"
-          mode="outlined"
-          label={t("code")}
-          placeholder={t("enter_code")}
+        <Controller
+          control={control}
+          rules={{
+            required: t("otp_code_required"),
+            minLength: {
+              value: 6,
+              message: t("min_6"),
+            },
+            maxLength: {
+              value: 6,
+              message: t("min_6"),
+            },
+          }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              className="w-[90%] mt-8"
+              outlineColor="#79747E"
+              activeOutlineColor="#FF6D00CC"
+              mode="outlined"
+              label={t("code")}
+              placeholder={t("enter_code")}
+              value={value}
+              onChangeText={(e) => {
+                onChange(e);
+                setErr("");
+              }}
+            />
+          )}
+          name="otp"
         />
+        {errors.otp && (
+          <Text className="text-red-600">{errors.otp.message}</Text>
+        )}
+        {!errors.otp && err && (
+          <Text className="text-red-600">{t("wrong_otp")}</Text>
+        )}
         <Button
           className="w-[90%] mt-8 bg-[#FF6D00]"
           mode="contained"
-          onPress={() => console.log("Pressed")}
+          onPress={handleSubmit(sendOtp)}
         >
           {t("get-started")}
         </Button>
@@ -40,7 +102,7 @@ const ConfirmationCode = () => {
           textColor="#FF6D00CC"
           className="w-[90%] mt-2"
           mode="outlined"
-          onPress={() => console.log("Pressed")}
+          onPress={resendOtp}
         >
           {t("resend_code")}
         </Button>

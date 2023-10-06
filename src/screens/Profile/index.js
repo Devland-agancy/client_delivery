@@ -1,23 +1,19 @@
 import React from "react";
-import {
-  SafeAreaView,
-  View,
-  Image,
-  StyleSheet,
-  Text,
-  ScrollView,
-} from "react-native";
-import { TextInput, Checkbox, Button } from "react-native-paper";
-import { Link } from "react-router-native";
+import { SafeAreaView, View, Image, Text, ScrollView } from "react-native";
+import { TextInput, Button } from "react-native-paper";
 import DropDown from "react-native-paper-dropdown";
 import { useTranslation } from "react-i18next";
-
+import { useSelector } from "react-redux";
+import { useForm, Controller } from "react-hook-form";
+import { useNavigate } from "react-router-native";
 import profileImage from "../../assets/imgs/profile_image.png";
 
 const Profile = () => {
-  const { t, i18n } = useTranslation();
+  const userInfo = useSelector((state) => state.userInfo.value);
+  const { t } = useTranslation();
   const [showDropDown, setShowDropDown] = React.useState(false);
   const [gender, setGender] = React.useState("");
+  const navigate = useNavigate();
   const genderList = [
     {
       label: "Male",
@@ -39,6 +35,9 @@ const Profile = () => {
       <View className="flex-1 items-center">
         <Text className="font-normal text-lg text-center mx-4 mt-20">
           {t("profile_step")}
+        </Text>
+        <Text className="font-normal text-lg text-center mx-4">
+          {userInfo?.email}
         </Text>
         <Image
           source={profileImage}

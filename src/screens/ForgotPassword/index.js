@@ -1,14 +1,15 @@
 import React from "react";
-import { View, Image, StyleSheet, Text, ScrollView } from "react-native";
+import { View, Image, Text, ScrollView } from "react-native";
 import { TextInput } from "react-native-paper";
-import { Checkbox } from "react-native-paper";
 import { Button } from "react-native-paper";
-import { Link } from "react-router-native";
+import { useNavigate } from "react-router-native";
 import { useTranslation } from "react-i18next";
 import forgotPwdImage from "../../assets/imgs/forget_pwd.png";
 
 const ForgotPassword = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
   return (
     <ScrollView
       className="w-full"
@@ -33,7 +34,7 @@ const ForgotPassword = () => {
         <Button
           className="w-[90%] mt-8 bg-[#FF6D00]"
           mode="contained"
-          onPress={() => console.log("Pressed")}
+          onPress={() => navigate("/resetCode")}
         >
           {t("send_code")}
         </Button>
@@ -42,7 +43,7 @@ const ForgotPassword = () => {
           textColor="#FF6D00CC"
           className="w-[90%] mt-2"
           mode="outlined"
-          onPress={() => console.log("Pressed")}
+          onPress={() => navigate("/")}
         >
           {t("sign_in")}
         </Button>
