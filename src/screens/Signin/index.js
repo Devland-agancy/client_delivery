@@ -25,14 +25,11 @@ const SignIn = () => {
   });
   async function logIn(values) {
     try {
-      console.log("signin:", values);
       const response = await axios.post("authentication/login/", values);
-      console.log("signin response:", response?.data);
       if (response?.data && response?.data?.activation_confirmed) {
         dispatch(setUserInfo(response?.data));
         navigate("/profile");
       } else {
-        console.log("redirect to confirmation code", values?.phone);
         await axios.post("authentication/otp/resend/", {
           phone: values?.phone,
         });

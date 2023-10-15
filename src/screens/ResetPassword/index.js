@@ -30,7 +30,6 @@ const ResetPassword = () => {
         "authentication/reset-password/",
         values
       );
-      console.log("reset pwd:", response?.data);
       if (response?.data?.status === "SUCCESS") {
         navigate("/");
       } else {

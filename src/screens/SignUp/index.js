@@ -28,7 +28,6 @@ const SignUp = () => {
     console.log("register values:", values);
     try {
       const response = await axios.post("authentication/register/", values);
-      console.log("register response:", response?.data);
       if (response?.data?.role === "CLIENT") {
         navigate("/confirmationCode", { state: values });
       } else {

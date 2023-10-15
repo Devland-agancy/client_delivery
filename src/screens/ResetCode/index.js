@@ -27,7 +27,6 @@ const ResetCode = () => {
   async function verifyOtpCode(values) {
     try {
       const response = await axios.post("authentication/otp/check/", values);
-      console.log("reset otp:", response?.data);
       if (response?.data?.status === "SUCCESS") {
         navigate("/resetPassword", { state: values });
       } else {
