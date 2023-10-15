@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Image, Text, ScrollView } from "react-native";
 import { TextInput, Button } from "react-native-paper";
 import { useTranslation } from "react-i18next";
@@ -10,6 +10,7 @@ import signUpImage from "../../assets/imgs/signup.png";
 const SignUp = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [errMessage, setErrMessage] = useState("");
   const {
     control,
     handleSubmit,
@@ -17,23 +18,24 @@ const SignUp = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      first_name: "Youcef",
-      last_name: "Bounoua",
       role: "CLIENT",
-      email: "y.bounoua@esi-sba.dz",
       phone: "",
       password1: "",
       password2: "",
     },
   });
   async function createUser(values) {
+    console.log("register values:", values);
     try {
       const response = await axios.post("authentication/register/", values);
-      if (response.status === 200 || response.status === 201) {
-        navigate("/confirmationCode");
+      console.log("register response:", response?.data);
+      if (response?.data?.role === "CLIENT") {
+        navigate("/confirmationCode", { state: values });
+      } else {
+        setErrMessage(response?.data?.message);
       }
     } catch (error) {
-      console.log(error.message);
+      setErrMessage(error.message);
     }
   }
   return (
@@ -115,6 +117,7 @@ const SignUp = () => {
         {errors.password2 && (
           <Text className="text-red-600">{t("confirm_err")}</Text>
         )}
+        {errMessage && <Text className="text-red-600">{errMessage}</Text>}
         <Button
           className="w-[90%] mt-2 bg-[#FF6D00]"
           mode="contained"

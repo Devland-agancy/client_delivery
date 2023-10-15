@@ -3,14 +3,17 @@ import { SafeAreaView, View, Image, Text, ScrollView } from "react-native";
 import { TextInput, Button } from "react-native-paper";
 import DropDown from "react-native-paper-dropdown";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
+import { useSelector, useDispatch } from "react-redux";
+import { setUserInfo } from "../../redux/userSlice";
 import { useNavigate } from "react-router-native";
 import profileImage from "../../assets/imgs/profile_image.png";
+import FileInput from "./FileInput";
 
 const Profile = () => {
-  const userInfo = useSelector((state) => state.userInfo.value);
+  const userInfo = useSelector((state) => state.userInfo);
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const [showDropDown, setShowDropDown] = React.useState(false);
   const [gender, setGender] = React.useState("");
   const navigate = useNavigate();
@@ -24,6 +27,11 @@ const Profile = () => {
       value: "female",
     },
   ];
+
+  function setupProfile() {
+    dispatch(setUserInfo(undefined));
+    console.log("setup profile!");
+  }
   return (
     <ScrollView
       className="w-full"
@@ -39,10 +47,7 @@ const Profile = () => {
         <Text className="font-normal text-lg text-center mx-4">
           {userInfo?.email}
         </Text>
-        <Image
-          source={profileImage}
-          className="h-[150px] mt-4 w-[150px] rounded-full"
-        />
+        <FileInput defaultImageSrc={profileImage} />
         <TextInput
           className="w-[90%] mt-8"
           outlineColor="#79747E"
@@ -76,7 +81,7 @@ const Profile = () => {
         <Button
           className="w-[90%] mt-8 bg-[#FF6D00]"
           mode="contained"
-          onPress={() => console.log("Pressed")}
+          onPress={setupProfile}
         >
           {t("setup_profile")}
         </Button>

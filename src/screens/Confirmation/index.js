@@ -3,13 +3,14 @@ import { View, Image, Text, ScrollView } from "react-native";
 import { TextInput, Button } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";
-import { useNavigate } from "react-router-native";
+import { useNavigate, useLocation } from "react-router-native";
 import axios from "./../../API/Axios";
 import confirmPwdImage from "../../assets/imgs/confirm_code.png";
 
 const ConfirmationCode = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [err, setErr] = useState("");
   const {
     control,
@@ -17,7 +18,7 @@ const ConfirmationCode = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: "y.bounoua@esi-sba.dz",
+      phone: location.state.phone,
       otp: "",
     },
   });
@@ -26,8 +27,10 @@ const ConfirmationCode = () => {
     try {
       const response = await axios.post("authentication/otp/check/", values);
       console.log("response: ", response?.data);
-      if (response?.data) {
+      if (response?.data?.status === "SUCCESS") {
         navigate("/");
+      } else {
+        setErr(t("wrong_otp"));
       }
     } catch (error) {
       setErr(error?.message);
@@ -35,9 +38,9 @@ const ConfirmationCode = () => {
   }
   async function resendOtp() {
     try {
-      const response = await axios.post("authentication/otp/resend/");
+      await axios.post("authentication/otp/resend/");
     } catch (error) {
-      console.log(error);
+      setErr(error?.message);
     }
   }
 

@@ -11,7 +11,6 @@ import ProtectedRoute from "./ProtectedRoute";
 import { useSelector } from "react-redux";
 
 const AppRoutes = () => {
-  // const userInfo = true;
   const userInfo = useSelector((state) => state.userInfo);
   console.log("usr:", userInfo);
   return (

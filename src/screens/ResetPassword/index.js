@@ -1,14 +1,46 @@
-import React from "react";
-import { View, Image, StyleSheet, Text, ScrollView } from "react-native";
+import React, { useState } from "react";
+import { View, Image, Text, ScrollView } from "react-native";
 import { TextInput } from "react-native-paper";
-import { Checkbox } from "react-native-paper";
 import { Button } from "react-native-paper";
-import { Link } from "react-router-native";
 import { useTranslation } from "react-i18next";
+import { useForm, Controller } from "react-hook-form";
+import { useNavigate, useLocation } from "react-router-native";
 import forgotPwdImage from "../../assets/imgs/forget_pwd.png";
+import axios from "./../../API/Axios";
 
 const ResetPassword = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [errMessage, setErrMessage] = useState("");
+  const location = useLocation();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm({
+    defaultValues: {
+      phone: location.state.phone,
+    },
+  });
+
+  async function resetPassword(values) {
+    try {
+      const response = await axios.post(
+        "authentication/reset-password/",
+        values
+      );
+      console.log("reset pwd:", response?.data);
+      if (response?.data?.status === "SUCCESS") {
+        navigate("/");
+      } else {
+        setErrMessage(response?.data?.message);
+      }
+    } catch (error) {
+      setErrMessage(error.message);
+    }
+  }
+
   return (
     <ScrollView
       className="w-full"
@@ -22,26 +54,77 @@ const ResetPassword = () => {
         <Text className="font-normal text-lg text-center mx-4">
           {t("reset_pwd_title")}
         </Text>
-        <TextInput
-          className="w-[90%] mt-8"
-          outlineColor="#79747E"
-          activeOutlineColor="#FF6D00CC"
-          mode="outlined"
-          label={t("new_password")}
-          placeholder={t("enter_password")}
+        <Controller
+          control={control}
+          rules={{
+            required: t("pwd_required"),
+            minLength: {
+              value: 6,
+              message: t("password_err"),
+            },
+          }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              className="w-[90%] mt-2"
+              outlineColor="#79747E"
+              activeOutlineColor="#FF6D00CC"
+              mode="outlined"
+              label={t("new_password")}
+              placeholder={t("enter_password")}
+              value={value}
+              onChangeText={(event) => {
+                onChange(event);
+                setErrMessage("");
+              }}
+            />
+          )}
+          name="password1"
         />
-        <TextInput
-          className="w-[90%] mt-2"
-          outlineColor="#79747E"
-          activeOutlineColor="#FF6D00CC"
-          mode="outlined"
-          label={t("confirm_pwd")}
-          placeholder={t("confirm_your_pwd")}
+        {errors.password1 && (
+          <Text className="text-red-600 self-start ml-[6%]">
+            {errors.password1.message}
+          </Text>
+        )}
+        <Controller
+          control={control}
+          rules={{
+            required: t("pwd_required"),
+            validate: (value) =>
+              value === watch("password1") || t("confirm_err"),
+            minLength: {
+              value: 6,
+              message: t("password_err"),
+            },
+          }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              className="w-[90%] mt-2"
+              outlineColor="#79747E"
+              activeOutlineColor="#FF6D00CC"
+              mode="outlined"
+              label={t("confirm_pwd")}
+              placeholder={t("confirm_your_pwd")}
+              value={value}
+              onChangeText={(event) => {
+                onChange(event);
+                setErrMessage("");
+              }}
+            />
+          )}
+          name="password2"
         />
+        {errors.password2 && (
+          <Text className="text-red-600 self-start ml-[6%]">
+            {errors.password2.message}
+          </Text>
+        )}
+        {errMessage && (
+          <Text className="text-red-600 self-start ml-[6%]">{errMessage}</Text>
+        )}
         <Button
           className="w-[90%] mt-8 bg-[#FF6D00]"
           mode="contained"
-          onPress={() => console.log("Pressed")}
+          onPress={handleSubmit(resetPassword)}
         >
           {t("let_in")}
         </Button>

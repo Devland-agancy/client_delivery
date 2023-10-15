@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Image, Text, ScrollView } from "react-native";
 import { TextInput, Button } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
@@ -13,26 +13,33 @@ const SignIn = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [errMessage, setErrMessage] = useState("");
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: "y.bounoua@esi-sba.dz",
+      role: "CLIENT",
     },
   });
   async function logIn(values) {
-    console.log("signin pressed!");
     try {
-      console.log("val user:", values);
+      console.log("signin:", values);
       const response = await axios.post("authentication/login/", values);
-      dispatch(setUserInfo(values));
-      navigate("/profile");
-      // if (response?.data) {
-      // }
+      console.log("signin response:", response?.data);
+      if (response?.data && response?.data?.activation_confirmed) {
+        dispatch(setUserInfo(response?.data));
+        navigate("/profile");
+      } else {
+        console.log("redirect to confirmation code", values?.phone);
+        await axios.post("authentication/otp/resend/", {
+          phone: values?.phone,
+        });
+        navigate("/confirmationCode", { state: values });
+      }
     } catch (error) {
-      console.log("err:", error.message);
+      setErrMessage(error.message);
     }
   }
 
@@ -62,7 +69,10 @@ const SignIn = () => {
               label={t("phone_number")}
               placeholder={t("enter_number")}
               value={value}
-              onChangeText={onChange}
+              onChangeText={(event) => {
+                onChange(event);
+                setErrMessage("");
+              }}
             />
           )}
           name="phone"
@@ -83,7 +93,10 @@ const SignIn = () => {
               label={t("password")}
               placeholder={t("enter_password")}
               value={value}
-              onChangeText={onChange}
+              onChangeText={(event) => {
+                onChange(event);
+                setErrMessage("");
+              }}
             />
           )}
           name="password"
@@ -91,6 +104,7 @@ const SignIn = () => {
         {errors.password && (
           <Text className="text-red-600">{t("password_err")}</Text>
         )}
+        {errMessage && <Text className="text-red-600">{errMessage}</Text>}
         <Button
           className="w-[90%] mt-6 bg-[#FF6D00]"
           mode="contained"
