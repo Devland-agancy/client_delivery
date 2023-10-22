@@ -41,11 +41,8 @@ const Profile = () => {
       nestedScrollEnabled={true}
     >
       <View className="flex-1 items-center">
-        <Text className="font-normal text-lg text-center mx-4 mt-20">
+        <Text className="font-normal text-lg text-center mx-4 mt-20 mb-4">
           {t("profile_step")}
-        </Text>
-        <Text className="font-normal text-lg text-center mx-4">
-          {userInfo?.email}
         </Text>
         <FileInput defaultImageSrc={profileImage} />
         <TextInput
@@ -53,8 +50,9 @@ const Profile = () => {
           outlineColor="#79747E"
           activeOutlineColor="#FF6D00CC"
           mode="outlined"
+          value={userInfo?.first_name + " " + userInfo?.last_name}
           label={t("user_name")}
-          placeholder="Chaker kercha"
+          placeholder={t("user_name")}
         />
         <TextInput
           className="w-[90%] mt-2"

@@ -88,10 +88,14 @@ const ConfirmationCode = () => {
           name="otp"
         />
         {errors.otp && (
-          <Text className="text-red-600">{errors.otp.message}</Text>
+          <Text className="text-red-600 self-start ml-[6%]">
+            {errors.otp.message}
+          </Text>
         )}
         {!errors.otp && err && (
-          <Text className="text-red-600">{t("wrong_otp")}</Text>
+          <Text className="text-red-600 self-start ml-[6%]">
+            {t("wrong_otp")}
+          </Text>
         )}
         <Button
           className="w-[90%] mt-8 bg-[#FF6D00]"

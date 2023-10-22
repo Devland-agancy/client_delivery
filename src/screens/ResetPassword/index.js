@@ -12,6 +12,8 @@ const ResetPassword = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [errMessage, setErrMessage] = useState("");
+  const [hidePass, setHidePass] = useState(true);
+  const [hidePass2, setHidePass2] = useState(true);
   const location = useLocation();
   const {
     control,
@@ -20,7 +22,7 @@ const ResetPassword = () => {
     watch,
   } = useForm({
     defaultValues: {
-      phone: location.state.phone,
+      email: location.state.email,
     },
   });
 
@@ -65,16 +67,26 @@ const ResetPassword = () => {
           render={({ field: { onChange, value } }) => (
             <TextInput
               className="w-[90%] mt-2"
+              secureTextEntry={hidePass ? true : false}
               outlineColor="#79747E"
               activeOutlineColor="#FF6D00CC"
               mode="outlined"
               label={t("new_password")}
               placeholder={t("enter_password")}
+              returnKeyType="next"
               value={value}
               onChangeText={(event) => {
                 onChange(event);
                 setErrMessage("");
               }}
+              right={
+                <TextInput.Icon
+                  icon={hidePass ? "eye" : "eye-off"}
+                  size={28}
+                  color={"black"}
+                  onPress={() => setHidePass(!hidePass)}
+                />
+              }
             />
           )}
           name="password1"
@@ -98,16 +110,26 @@ const ResetPassword = () => {
           render={({ field: { onChange, value } }) => (
             <TextInput
               className="w-[90%] mt-2"
+              secureTextEntry={hidePass2 ? true : false}
               outlineColor="#79747E"
               activeOutlineColor="#FF6D00CC"
               mode="outlined"
               label={t("confirm_pwd")}
               placeholder={t("confirm_your_pwd")}
+              returnKeyType="done"
               value={value}
               onChangeText={(event) => {
                 onChange(event);
                 setErrMessage("");
               }}
+              right={
+                <TextInput.Icon
+                  icon={hidePass2 ? "eye" : "eye-off"}
+                  size={28}
+                  color={"black"}
+                  onPress={() => setHidePass2(!hidePass2)}
+                />
+              }
             />
           )}
           name="password2"

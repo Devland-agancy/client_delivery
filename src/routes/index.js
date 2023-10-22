@@ -23,18 +23,18 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-      <Route
+      {/* <Route
         path="/signup"
         element={
           <ProtectedRoute condition={!!userInfo} fallback={"/profile"}>
             <SignUp />
           </ProtectedRoute>
         }
-      />
+      /> */}
       <Route path="/forgotPassword" element={<ForgotPassword />} />
       <Route path="/resetCode" element={<ResetCode />} />
       <Route path="/resetPassword" element={<ResetPassword />} />
-      <Route path="/confirmationCode" element={<ConfirmationCode />} />
+      {/* <Route path="/confirmationCode" element={<ConfirmationCode />} /> */}
       <Route
         path="/profile"
         element={

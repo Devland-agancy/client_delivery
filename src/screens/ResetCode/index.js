@@ -20,12 +20,13 @@ const ResetCode = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      phone: location.state.phone,
+      email: location.state.email,
     },
   });
 
   async function verifyOtpCode(values) {
     try {
+      console.log("reset code email", values);
       const response = await axios.post("authentication/otp/check/", values);
       if (response?.data?.status === "SUCCESS") {
         navigate("/resetPassword", { state: values });
@@ -33,7 +34,7 @@ const ResetCode = () => {
         setErrMessage(t("wrong_otp"));
       }
     } catch (error) {
-      setErrMessage(error.message);
+      setErrMessage(t("wrong_otp"));
     }
   }
 
@@ -84,9 +85,9 @@ const ResetCode = () => {
           )}
           name="otp"
         />
-        {errors.optCode && (
+        {errors.otp && (
           <Text className="text-red-600 self-start ml-[6%]">
-            {errors.optCode.message}
+            {errors.otp.message}
           </Text>
         )}
         {errMessage && (

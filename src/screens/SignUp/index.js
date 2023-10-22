@@ -11,6 +11,8 @@ const SignUp = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [errMessage, setErrMessage] = useState("");
+  const [hidePass, setHidePass] = useState(true);
+  const [hidePass2, setHidePass2] = useState(true);
   const {
     control,
     handleSubmit,
@@ -34,7 +36,7 @@ const SignUp = () => {
         setErrMessage(response?.data?.message);
       }
     } catch (error) {
-      setErrMessage(error.message);
+      setErrMessage(t("phone_exists"));
     }
   }
   return (
@@ -62,13 +64,21 @@ const SignUp = () => {
               mode="outlined"
               label={t("phone_number")}
               placeholder={t("enter_number")}
+              returnKeyType="next"
               value={value}
-              onChangeText={onChange}
+              onChangeText={(event) => {
+                onChange(event);
+                setErrMessage("");
+              }}
             />
           )}
           name="phone"
         />
-        {errors.phone && <Text className="text-red-600">{t("phone_err")}</Text>}
+        {errors.phone && (
+          <Text className="text-red-600 self-start ml-[6%]">
+            {t("phone_err")}
+          </Text>
+        )}
         <Controller
           control={control}
           rules={{
@@ -78,19 +88,34 @@ const SignUp = () => {
           render={({ field: { onChange, value } }) => (
             <TextInput
               className="w-[90%] mt-2"
+              secureTextEntry={hidePass ? true : false}
               outlineColor="#79747E"
               activeOutlineColor="#FF6D00CC"
               mode="outlined"
               label={t("password")}
               placeholder={t("enter_password")}
+              returnKeyType="next"
               value={value}
-              onChangeText={onChange}
+              onChangeText={(event) => {
+                onChange(event);
+                setErrMessage("");
+              }}
+              right={
+                <TextInput.Icon
+                  icon={hidePass ? "eye" : "eye-off"}
+                  size={28}
+                  color={"black"}
+                  onPress={() => setHidePass(!hidePass)}
+                />
+              }
             />
           )}
           name="password1"
         />
         {errors.password1 && (
-          <Text className="text-red-600">{t("password_err")}</Text>
+          <Text className="text-red-600 self-start ml-[6%]">
+            {t("password_err")}
+          </Text>
         )}
         <Controller
           control={control}
@@ -102,21 +127,38 @@ const SignUp = () => {
           render={({ field: { onChange, value } }) => (
             <TextInput
               className="w-[90%] mt-2"
+              secureTextEntry={hidePass2 ? true : false}
               outlineColor="#79747E"
               activeOutlineColor="#FF6D00CC"
               mode="outlined"
               label={t("confirm_pwd")}
               placeholder={t("confirm_your_pwd")}
+              returnKeyType="done"
               value={value}
-              onChangeText={onChange}
+              onChangeText={(event) => {
+                onChange(event);
+                setErrMessage("");
+              }}
+              right={
+                <TextInput.Icon
+                  icon={hidePass2 ? "eye" : "eye-off"}
+                  size={28}
+                  color={"black"}
+                  onPress={() => setHidePass2(!hidePass2)}
+                />
+              }
             />
           )}
           name="password2"
         />
         {errors.password2 && (
-          <Text className="text-red-600">{t("confirm_err")}</Text>
+          <Text className="text-red-600 self-start ml-[6%]">
+            {t("confirm_err")}
+          </Text>
         )}
-        {errMessage && <Text className="text-red-600">{errMessage}</Text>}
+        {errMessage && (
+          <Text className="text-red-600 self-start ml-[6%]">{errMessage}</Text>
+        )}
         <Button
           className="w-[90%] mt-2 bg-[#FF6D00]"
           mode="contained"

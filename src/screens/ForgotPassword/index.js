@@ -13,6 +13,7 @@ const ForgotPassword = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const [errMessage, setErrMessage] = useState("");
   const {
     control,
@@ -24,16 +25,16 @@ const ForgotPassword = () => {
 
   async function sendOtpCode(values) {
     try {
-      console.log("values phone: ", values);
+      console.log("values forgot password: ", values);
       const response = await axios.post("authentication/otp/resend/", values);
       console.log("response phone: ", response?.data);
       if (response?.data?.status === "SUCCESS") {
         navigate("/resetCode", { state: values });
       } else {
-        setErrMessage(t("wrong_otp"));
+        setErrMessage(t("email_err"));
       }
     } catch (error) {
-      setErrMessage(error.message);
+      setErrMessage(t("email_err"));
     }
   }
 
@@ -53,10 +54,10 @@ const ForgotPassword = () => {
         <Controller
           control={control}
           rules={{
-            required: t("phone_required"),
+            required: t("email_required"),
             pattern: {
-              value: /\+213\d{9}/,
-              message: t("phone_err"),
+              value: emailPattern,
+              message: t("email_err"),
             },
           }}
           render={({ field: { onChange, value } }) => (
@@ -65,8 +66,8 @@ const ForgotPassword = () => {
               outlineColor="#79747E"
               activeOutlineColor="#FF6D00CC"
               mode="outlined"
-              label={t("phone_number")}
-              placeholder={t("enter_number")}
+              label={t("email_address")}
+              placeholder={t("enter_email")}
               value={value}
               onChangeText={(event) => {
                 onChange(event);
@@ -74,11 +75,11 @@ const ForgotPassword = () => {
               }}
             />
           )}
-          name="phone"
+          name="email"
         />
-        {errors.phone && (
+        {errors.email && (
           <Text className="text-red-600 self-start ml-[6%]">
-            {errors.phone.message}
+            {errors.email.message}
           </Text>
         )}
         {errMessage && (
