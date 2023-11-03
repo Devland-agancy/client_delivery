@@ -28,9 +28,8 @@ const Profile = () => {
     },
   ];
 
-  function setupProfile() {
+  function logout() {
     dispatch(setUserInfo(undefined));
-    console.log("setup profile!");
   }
   return (
     <ScrollView
@@ -40,60 +39,17 @@ const Profile = () => {
       scrollEnabled={true}
       nestedScrollEnabled={true}
     >
-      <View className="flex-1 items-center">
+      <View className="flex-1 items-center justify-center">
         <Text className="font-normal text-lg text-center mx-4 mt-20 mb-4">
-          {t("profile_step")}
+          Hello {userInfo?.first_name + " " + userInfo?.last_name}!
         </Text>
-        <FileInput defaultImageSrc={profileImage} />
-        <TextInput
-          className="w-[90%] mt-8"
-          outlineColor="#79747E"
-          activeOutlineColor="#FF6D00CC"
-          mode="outlined"
-          value={userInfo?.first_name + " " + userInfo?.last_name}
-          label={t("user_name")}
-          placeholder={t("user_name")}
-        />
-        <TextInput
-          className="w-[90%] mt-2"
-          outlineColor="#79747E"
-          activeOutlineColor="#FF6D00CC"
-          mode="outlined"
-          label={t("birth_date")}
-          placeholder="08/17/2023"
-          right={<TextInput.Icon icon="calendar" />}
-        />
-        <SafeAreaView className="w-[90%] mt-2">
-          <DropDown
-            label={t("gender")}
-            mode={"outlined"}
-            visible={showDropDown}
-            showDropDown={() => setShowDropDown(true)}
-            onDismiss={() => setShowDropDown(false)}
-            value={gender}
-            setValue={setGender}
-            list={genderList}
-            dropDownItemSelectedTextStyle={{ color: "#FF6D00CC" }}
-          />
-        </SafeAreaView>
         <Button
           className="w-[90%] mt-8 bg-[#FF6D00]"
           mode="contained"
-          onPress={setupProfile}
+          onPress={logout}
         >
-          {t("setup_profile")}
+          Logout
         </Button>
-        <Button
-          theme={{ colors: { outline: "#FF6D00" } }}
-          textColor="#FF6D00CC"
-          className="w-[90%] mt-2"
-          mode="outlined"
-          onPress={() => console.log("Pressed")}
-        >
-          {t("skip_now")}
-        </Button>
-
-        <Text className="text-center mx-4 pt-4">{t("copyright")}</Text>
       </View>
     </ScrollView>
   );

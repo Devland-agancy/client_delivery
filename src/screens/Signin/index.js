@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "../../redux/userSlice";
 import loginImg from "../../assets/imgs/login.png";
+import Spinner from "../../components/Spinner";
 
 const SignIn = () => {
   const { t } = useTranslation();
@@ -15,6 +16,7 @@ const SignIn = () => {
   const dispatch = useDispatch();
   const [hidePass, setHidePass] = useState(true);
   const [errMessage, setErrMessage] = useState("");
+  const [isProccessing, setIsProccessing] = useState(false);
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const {
     control,
@@ -26,12 +28,15 @@ const SignIn = () => {
 
   async function logIn(values) {
     try {
+      setIsProccessing(true);
       const response = await axios.post("authentication/login/", values);
       if (response?.data && response?.data?.role === "CLIENT") {
         dispatch(setUserInfo(response?.data));
+        setIsProccessing(false);
         navigate("/profile");
       }
     } catch (error) {
+      setIsProccessing(false);
       setErrMessage(t("wrong-credentials"));
     }
   }
@@ -44,7 +49,8 @@ const SignIn = () => {
       scrollEnabled={true}
       nestedScrollEnabled={true}
     >
-      <View className="flex-1 items-center">
+      {isProccessing && <Spinner />}
+      <View className={`${isProccessing && "opacity-30"} flex-1 items-center`}>
         <Image source={loginImg} className="mt-10 w-[80%] h-[40%]" />
         <Text className="font-normal text-lg">{t("signin_title")}</Text>
         <Controller
@@ -130,15 +136,6 @@ const SignIn = () => {
         >
           {t("sign_in")}
         </Button>
-        {/* <Button
-          theme={{ colors: { outline: "#FF6D00" } }}
-          textColor="#FF6D00CC"
-          className="w-[90%] mt-2"
-          mode="outlined"
-          onPress={() => navigate("/signup")}
-        >
-          {t("sign_up")}
-        </Button> */}
         <Button
           textColor="#FF6D00CC"
           className="w-[90%] mt-2"

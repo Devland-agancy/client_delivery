@@ -7,11 +7,14 @@ import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";
 import forgotPwdImage from "../../assets/imgs/forget_pwd.png";
 import axios from "./../../API/Axios";
+import Spinner from "../../components/Spinner";
+import useBackButtonHandler from "../../hooks/useBack";
 
 const ResetCode = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isProccessing, setIsProccessing] = useState(false);
   const [errMessage, setErrMessage] = useState("");
 
   const {
@@ -23,25 +26,31 @@ const ResetCode = () => {
       email: location.state.email,
     },
   });
-
+  useBackButtonHandler();
   async function verifyOtpCode(values) {
     try {
-      console.log("reset code email", values);
+      setIsProccessing(true);
       const response = await axios.post("authentication/otp/check/", values);
       if (response?.data?.status === "SUCCESS") {
+        setIsProccessing(false);
         navigate("/resetPassword", { state: values });
       } else {
+        setIsProccessing(false);
         setErrMessage(t("wrong_otp"));
       }
     } catch (error) {
+      setIsProccessing(false);
       setErrMessage(t("wrong_otp"));
     }
   }
 
   async function resendOtp() {
     try {
+      setIsProccessing(true);
       await axios.post("authentication/otp/resend/", location.state);
+      setIsProccessing(false);
     } catch (error) {
+      setIsProccessing(false);
       setErrMessage(error.message);
     }
   }
@@ -54,7 +63,8 @@ const ResetCode = () => {
       scrollEnabled={true}
       nestedScrollEnabled={true}
     >
-      <View className="flex-1 items-center">
+      {isProccessing && <Spinner />}
+      <View className={`${isProccessing && "opacity-30"} flex-1 items-center`}>
         <Image source={forgotPwdImage} className="h-[40%] mt-10 w-[80%]" />
         <Text className="font-normal text-lg text-center mx-4">
           {t("reset_code_title")}

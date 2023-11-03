@@ -7,6 +7,8 @@ import { useForm, Controller } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-native";
 import forgotPwdImage from "../../assets/imgs/forget_pwd.png";
 import axios from "./../../API/Axios";
+import Spinner from "../../components/Spinner";
+import useBackButtonHandler from "../../hooks/useBack";
 
 const ResetPassword = () => {
   const { t } = useTranslation();
@@ -14,6 +16,7 @@ const ResetPassword = () => {
   const [errMessage, setErrMessage] = useState("");
   const [hidePass, setHidePass] = useState(true);
   const [hidePass2, setHidePass2] = useState(true);
+  const [isProccessing, setIsProccessing] = useState(false);
   const location = useLocation();
   const {
     control,
@@ -26,18 +29,24 @@ const ResetPassword = () => {
     },
   });
 
+  useBackButtonHandler();
+
   async function resetPassword(values) {
     try {
+      setIsProccessing(true);
       const response = await axios.post(
         "authentication/reset-password/",
         values
       );
       if (response?.data?.status === "SUCCESS") {
+        setIsProccessing(false);
         navigate("/");
       } else {
+        setIsProccessing(false);
         setErrMessage(response?.data?.message);
       }
     } catch (error) {
+      setIsProccessing(false);
       setErrMessage(error.message);
     }
   }
@@ -50,7 +59,8 @@ const ResetPassword = () => {
       scrollEnabled={true}
       nestedScrollEnabled={true}
     >
-      <View className="flex-1 items-center">
+      {isProccessing && <Spinner />}
+      <View className={`${isProccessing && "opacity-30"} flex-1 items-center`}>
         <Image source={forgotPwdImage} className="h-[40%] mt-10 w-[80%]" />
         <Text className="font-normal text-lg text-center mx-4">
           {t("reset_pwd_title")}

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Image, Text, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Image, Text, ScrollView, BackHandler } from "react-native";
 import { TextInput } from "react-native-paper";
 import { Button } from "react-native-paper";
 import { useNavigate } from "react-router-native";
@@ -8,11 +8,14 @@ import { useDispatch } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import forgotPwdImage from "../../assets/imgs/forget_pwd.png";
 import axios from "./../../API/Axios";
+import Spinner from "../../components/Spinner";
+import useBackButtonHandler from "../../hooks/useBack";
 
 const ForgotPassword = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [isProccessing, setIsProccessing] = useState(false);
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const [errMessage, setErrMessage] = useState("");
   const {
@@ -23,17 +26,21 @@ const ForgotPassword = () => {
     defaultValues: {},
   });
 
+  useBackButtonHandler();
+
   async function sendOtpCode(values) {
     try {
-      console.log("values forgot password: ", values);
+      setIsProccessing(true);
       const response = await axios.post("authentication/otp/resend/", values);
-      console.log("response phone: ", response?.data);
       if (response?.data?.status === "SUCCESS") {
+        setIsProccessing(false);
         navigate("/resetCode", { state: values });
       } else {
+        setIsProccessing(false);
         setErrMessage(t("email_err"));
       }
     } catch (error) {
+      setIsProccessing(false);
       setErrMessage(t("email_err"));
     }
   }
@@ -46,7 +53,8 @@ const ForgotPassword = () => {
       scrollEnabled={true}
       nestedScrollEnabled={true}
     >
-      <View className="flex-1 items-center">
+      {isProccessing && <Spinner />}
+      <View className={`${isProccessing && "opacity-30"} flex-1 items-center`}>
         <Image source={forgotPwdImage} className="h-[40%] mt-10 w-[80%]" />
         <Text className="font-normal text-lg text-center mx-4">
           {t("forgot_pwd_title")}
