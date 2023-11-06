@@ -1,17 +1,10 @@
 import React, { useState } from "react";
-import {
-  View,
-  Image,
-  Text,
-  ScrollView,
-  FlatList,
-  SafeAreaView,
-} from "react-native";
+import { View, Image, Text, ScrollView, SafeAreaView } from "react-native";
 import { IconButton, Searchbar, Button } from "react-native-paper";
 import ur_packages from "../../assets/imgs/package_sent.png";
-import package_icon from "../../assets/imgs/package_ic.png";
 import no_packages_yet from "../../assets/imgs/no_packages_yet.png";
 import delivered_package from "../../assets/imgs/delivered_package.gif";
+import PackageInfo from "../../components/PackageInfo";
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,17 +37,6 @@ const Home = () => {
       adress: "1543 Main street",
     },
   ];
-
-  const Package = ({ item }) => (
-    <View className="w-full flex flex-row mt-2 p-2 bg-gray-100 rounded-md">
-      <Image source={package_icon} className="w-16 h-16 rounded-full" />
-      <View className="flex flex-col justify-center">
-        <Text className="">{item.name}</Text>
-        <Text className="">{item.status}</Text>
-        <Text className="">{item.adress}</Text>
-      </View>
-    </View>
-  );
 
   return (
     <>
@@ -109,7 +91,7 @@ const Home = () => {
               />
               <Text>Your package has been delivered!</Text>
               {deliveredPackages.map((item) => (
-                <Package key={item.id} item={item} />
+                <PackageInfo key={item.id} item={item} />
               ))}
             </>
           )}
@@ -153,7 +135,9 @@ const Home = () => {
                 <Text>You haven't placed any orders yet.</Text>
               </View>
             ) : (
-              packagesList.map((item) => <Package key={item.id} item={item} />)
+              packagesList.map((item) => (
+                <PackageInfo key={item.id} item={item} />
+              ))
             )}
           </SafeAreaView>
         </View>

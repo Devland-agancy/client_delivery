@@ -8,6 +8,7 @@ import Profile from "./../screens/Profile/index";
 import ProtectedRoute from "./ProtectedRoute";
 import { useSelector } from "react-redux";
 import Home from "../screens/Home";
+import Signature from "../screens/Signature";
 
 const AppRoutes = () => {
   const userInfo = useSelector((state) => state.userInfo);
@@ -25,7 +26,8 @@ const AppRoutes = () => {
       <Route path="/forgotPassword" element={<ForgotPassword />} />
       <Route path="/resetCode" element={<ResetCode />} />
       <Route path="/resetPassword" element={<ResetPassword />} />
-      <Route path="/" element={<Home />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/" element={<Signature />} />
       <Route
         path="/profile"
         element={
