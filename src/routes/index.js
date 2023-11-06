@@ -7,6 +7,7 @@ import ResetPassword from "./../screens/ResetPassword/index";
 import Profile from "./../screens/Profile/index";
 import ProtectedRoute from "./ProtectedRoute";
 import { useSelector } from "react-redux";
+import Home from "../screens/Home";
 
 const AppRoutes = () => {
   const userInfo = useSelector((state) => state.userInfo);
@@ -14,7 +15,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route
-        path="/"
+        path="/s"
         element={
           <ProtectedRoute condition={!!userInfo} fallback={"/profile"}>
             <SignIn />
@@ -24,6 +25,7 @@ const AppRoutes = () => {
       <Route path="/forgotPassword" element={<ForgotPassword />} />
       <Route path="/resetCode" element={<ResetCode />} />
       <Route path="/resetPassword" element={<ResetPassword />} />
+      <Route path="/" element={<Home />} />
       <Route
         path="/profile"
         element={

@@ -30,5 +30,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "start",
+    fontFamily: "Roboto",
   },
 });
