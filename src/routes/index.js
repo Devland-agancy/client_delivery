@@ -10,6 +10,8 @@ import { useSelector } from "react-redux";
 import Home from "../screens/Home";
 import Signature from "../screens/Signature";
 import Feedback from "../screens/Feedback";
+import EditDetails from "../screens/EditDetails";
+import DeliveryMap from "../screens/DeliveryMap";
 
 const AppRoutes = () => {
   const userInfo = useSelector((state) => state.userInfo);
@@ -29,7 +31,9 @@ const AppRoutes = () => {
       <Route path="/resetPassword" element={<ResetPassword />} />
       <Route path="/home" element={<Home />} />
       <Route path="/signature" element={<Signature />} />
-      <Route path="/" element={<Feedback />} />
+      <Route path="/feedback" element={<Feedback />} />
+      <Route path="/editDetails" element={<EditDetails />} />
+      <Route path="/" element={<DeliveryMap />} />
       <Route
         path="/profile"
         element={
