@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { View, Image, Text, ScrollView, StyleSheet } from "react-native";
-import { IconButton, TextInput, Button } from "react-native-paper";
+import { IconButton, Button } from "react-native-paper";
 import MapView from "react-native-maps";
 import PackageInfo from "../../components/PackageInfo";
+import TimeLine from "../../components/TimeLine";
 
 const DeliveryMap = () => {
   const [recievedPackage, setRecievedPackage] = useState({
@@ -38,13 +39,7 @@ const DeliveryMap = () => {
         <View className="w-full flex flex-col items-center px-4">
           <PackageInfo item={recievedPackage} />
           <MapView style={styles.map} className="mt-4" />
-          <Button
-            className="w-full mt-12 bg-[#FF6D00]"
-            mode="contained"
-            onPress={confirmDelivery}
-          >
-            Confirm delivery
-          </Button>
+          <TimeLine />
         </View>
       </ScrollView>
     </>
@@ -56,7 +51,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: "100%",
-    height: "100%",
+    height: "40%",
   },
 });
 

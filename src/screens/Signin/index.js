@@ -33,7 +33,7 @@ const SignIn = () => {
       if (response?.data && response?.data?.role === "CLIENT") {
         dispatch(setUserInfo(response?.data));
         setIsProccessing(false);
-        navigate("/profile");
+        navigate("/home");
       }
     } catch (error) {
       setIsProccessing(false);

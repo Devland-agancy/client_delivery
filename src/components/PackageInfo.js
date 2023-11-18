@@ -8,7 +8,7 @@ const PackageInfo = ({ item }) => (
     <View className="flex flex-col justify-center">
       <Text className="">{item.name}</Text>
       <Text className="">{item.status}</Text>
-      <Text className="">{item.adress}</Text>
+      <Text className="">{item.address}</Text>
     </View>
   </View>
 );
