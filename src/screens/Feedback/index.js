@@ -1,9 +1,13 @@
 import React from "react";
 import { View, Image, Text, ScrollView } from "react-native";
 import { IconButton, TextInput, Button } from "react-native-paper";
+import { useLocation, useNavigate } from "react-router-native";
+import axios from "./../../API/Axios";
 import feedback_img from "../../assets/imgs/feedback.png";
 
 const Feedback = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   function submitReview() {}
   function skipNow() {}
   return (

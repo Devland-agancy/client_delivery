@@ -7,20 +7,22 @@ import {
   Searchbar,
   Button,
 } from "react-native-paper";
+import { useNavigate } from "react-router-native";
 import ur_packages from "../../assets/imgs/package_sent.png";
 import no_packages_yet from "../../assets/imgs/no_packages_yet.png";
 import delivered_package from "../../assets/imgs/delivered_package.gif";
 import PackageInfo from "../../components/PackageInfo";
 import axios from "./../../API/Axios";
 import Spinner from "../../components/Spinner";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { setUserInfo } from "../../redux/userSlice";
 
 const Home = () => {
+  const userInfo = useSelector((state) => state.userInfo);
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const onChangeSearch = (query) => setSearchQuery(query);
   const [allPackages, setAllPackages] = useState([]);
-  const [allSearchPackages, setAllSearchPackages] = useState([]);
   const [deliveredPackages, setDeliveredPackages] = useState([]);
   const [displayedPackages, setDisplayedPackages] = useState([]);
   const [errMessage, setErrMessage] = useState("");
@@ -43,7 +45,7 @@ const Home = () => {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `package/client_all_packages/?client_id=${11}`
+          `package/client_all_packages/?client_id=${userInfo?.id}`
         );
         if (response.data.success) {
           setAllPackages(response.data.message);
@@ -91,7 +93,16 @@ const Home = () => {
     hideModal();
   }
 
-  useEffect(() => {}, [searchQuery]);
+  useEffect(() => {
+    const searchResult = allPackages.filter((item) =>
+      item.name.includes(searchQuery)
+    );
+    setDisplayedPackages(searchResult);
+  }, [searchQuery]);
+
+  function handlePackageClick(item) {
+    navigate("/deliveryMap", { state: item });
+  }
 
   return (
     <>
@@ -129,6 +140,7 @@ const Home = () => {
         nestedScrollEnabled={true}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
+        automaticallyAdjustKeyboardInsets={true}
       >
         {isLoading ? (
           <Spinner />
@@ -194,13 +206,15 @@ const Home = () => {
                 </View>
               ) : displayedPackages.length > 0 ? (
                 displayedPackages.map((item) => (
-                  <PackageInfo key={item.id} item={item} />
+                  <PackageInfo
+                    key={item.id}
+                    item={item}
+                    handlePackageClick={() => handlePackageClick(item)}
+                  />
                 ))
               ) : (
                 <View className="w-full mt-8">
-                  <Text className="text-center text-base">
-                    Nothing here yet!
-                  </Text>
+                  <Text className="text-center text-base">No packages!</Text>
                 </View>
               )}
             </SafeAreaView>

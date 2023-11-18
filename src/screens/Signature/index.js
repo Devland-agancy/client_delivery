@@ -2,17 +2,34 @@ import React, { useState } from "react";
 import { View, Image, Text, ScrollView } from "react-native";
 import { IconButton, TextInput, Button } from "react-native-paper";
 import PackageInfo from "../../components/PackageInfo";
+import { useLocation, useNavigate } from "react-router-native";
+import axios from "./../../API/Axios";
 
 const Signature = () => {
-  const [recievedPackage, setRecievedPackage] = useState({
-    id: 4,
-    name: "Iphone 14 pro max",
-    status: "Shipped",
-    adress: "1543 Main street",
-  });
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [recievedPackage, setRecievedPackage] = useState(location.state);
+  const [signature, setSignature] = useState("");
 
-  function confirmDelivery() {}
-  function reportProblem() {}
+  async function confirmDelivery() {
+    try {
+      const response = await axios.post(
+        `package/confirm_client_delivery/${location.state.id}/`,
+        null,
+        { params: { client_id: location.state?.client?.id } }
+      );
+      if (response.data.success) {
+        setSignature("");
+        navigate("/feedback", { state: location.state });
+      }
+    } catch (error) {
+      console.log(":::::::::::::::", error);
+    }
+  }
+  function reportProblem() {
+    // TODO: handel the report problem
+  }
+
   return (
     <>
       <View className="w-full mt-2">
@@ -53,11 +70,10 @@ const Signature = () => {
             label={"Digital Signature"}
             placeholder={"Signature"}
             returnKeyType="done"
-            // value={value}
-            // onChangeText={(event) => {
-            // onChange(event);
-            // setErrMessage("");
-            // }}
+            value={signature}
+            onChangeText={(event) => {
+              setSignature(event);
+            }}
           />
           <Button
             className="w-full mt-12 bg-[#FF6D00]"

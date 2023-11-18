@@ -2,18 +2,32 @@ import React, { useState } from "react";
 import { View, Image, Text, ScrollView, StyleSheet } from "react-native";
 import { IconButton, Button } from "react-native-paper";
 import MapView from "react-native-maps";
+import { useLocation, useNavigate } from "react-router-native";
 import PackageInfo from "../../components/PackageInfo";
 import TimeLine from "../../components/TimeLine";
+import { useEffect } from "react";
+import Spinner from "../../components/Spinner";
+import DeliveredTimeLine from "../../components/DeliveredTimeLine";
 
 const DeliveryMap = () => {
-  const [recievedPackage, setRecievedPackage] = useState({
-    id: 4,
-    name: "Iphone 14 pro max",
-    status: "Shipped",
-    adress: "1543 Main street",
-  });
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [recievedPackage, setRecievedPackage] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   function confirmDelivery() {}
+
+  useEffect(() => {
+    setIsLoading(true);
+    setRecievedPackage(location.state);
+    console.log("|!!!!!!!!!!!!!!!!! ", location.state);
+    setIsLoading(false);
+  }, []);
+
+  function handlePackageClick() {}
+  function confirmDelivery() {
+    navigate("/signature", { state: recievedPackage });
+  }
 
   return (
     <>
@@ -36,11 +50,18 @@ const DeliveryMap = () => {
         showsHorizontalScrollIndicator={false}
         automaticallyAdjustKeyboardInsets={true}
       >
-        <View className="w-full flex flex-col items-center px-4">
-          <PackageInfo item={recievedPackage} />
-          <MapView style={styles.map} className="mt-4" />
-          <TimeLine />
-        </View>
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          <View className="w-full flex flex-col items-center px-4">
+            <PackageInfo
+              item={recievedPackage}
+              handlePackageClick={handlePackageClick}
+            />
+            <MapView style={styles.map} className="mt-4" />
+            <DeliveredTimeLine confirmDelivery={confirmDelivery} />
+          </View>
+        )}
       </ScrollView>
     </>
   );

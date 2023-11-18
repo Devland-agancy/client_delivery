@@ -29,16 +29,37 @@ const AppRoutes = () => {
       <Route path="/forgotPassword" element={<ForgotPassword />} />
       <Route path="/resetCode" element={<ResetCode />} />
       <Route path="/resetPassword" element={<ResetPassword />} />
-      {/* <Route path="/home" element={<Home />} /> */}
-      <Route path="/signature" element={<Signature />} />
-      <Route path="/feedback" element={<Feedback />} />
+      {/* <Route path="/feedback" element={<Feedback />} /> */}
       <Route path="/editDetails" element={<EditDetails />} />
-      <Route path="/deliveryMap" element={<DeliveryMap />} />
       <Route
         path="/home"
         element={
           <ProtectedRoute condition={!userInfo} fallback="/">
             <Home />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/deliveryMap"
+        element={
+          <ProtectedRoute condition={!userInfo} fallback="/">
+            <DeliveryMap />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/signature"
+        element={
+          <ProtectedRoute condition={!userInfo} fallback="/">
+            <Signature />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/feedback"
+        element={
+          <ProtectedRoute condition={!userInfo} fallback="/">
+            <Feedback />
           </ProtectedRoute>
         }
       />
