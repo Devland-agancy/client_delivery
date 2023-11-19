@@ -29,8 +29,7 @@ const AppRoutes = () => {
       <Route path="/forgotPassword" element={<ForgotPassword />} />
       <Route path="/resetCode" element={<ResetCode />} />
       <Route path="/resetPassword" element={<ResetPassword />} />
-      {/* <Route path="/feedback" element={<Feedback />} /> */}
-      <Route path="/editDetails" element={<EditDetails />} />
+      {/* <Route path="/editDetails" element={<EditDetails />} /> */}
       <Route
         path="/home"
         element={
@@ -60,6 +59,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute condition={!userInfo} fallback="/">
             <Feedback />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/editDetails"
+        element={
+          <ProtectedRoute condition={!userInfo} fallback="/">
+            <EditDetails />
           </ProtectedRoute>
         }
       />

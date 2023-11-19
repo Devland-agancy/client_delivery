@@ -25,6 +25,7 @@
     "react-native-paper": "^5.10.6",
     "react-native-paper-dates": "^0.19.7",
     "react-native-paper-dropdown": "^1.0.7",
+    "react-native-ratings": "^8.1.0",
     "react-native-safe-area-context": "4.6.3",
     "react-native-timeline-flatlist": "^0.8.0",
     "react-redux": "^8.1.3",

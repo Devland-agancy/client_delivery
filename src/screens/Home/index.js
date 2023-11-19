@@ -160,7 +160,11 @@ const Home = () => {
                 />
                 <Text>Your package has been delivered!</Text>
                 {deliveredPackages.map((item) => (
-                  <PackageInfo key={item.id} item={item} />
+                  <PackageInfo
+                    key={item.id}
+                    item={item}
+                    displayUpdateIcon={false}
+                  />
                 ))}
               </>
             )}

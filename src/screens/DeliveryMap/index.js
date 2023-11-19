@@ -8,6 +8,7 @@ import TimeLine from "../../components/TimeLine";
 import { useEffect } from "react";
 import Spinner from "../../components/Spinner";
 import DeliveredTimeLine from "../../components/DeliveredTimeLine";
+import useBackButtonHandler from "./../../hooks/useBack";
 
 const DeliveryMap = () => {
   const navigate = useNavigate();
@@ -20,7 +21,6 @@ const DeliveryMap = () => {
   useEffect(() => {
     setIsLoading(true);
     setRecievedPackage(location.state);
-    console.log("|!!!!!!!!!!!!!!!!! ", location.state);
     setIsLoading(false);
   }, []);
 
@@ -28,6 +28,7 @@ const DeliveryMap = () => {
   function confirmDelivery() {
     navigate("/signature", { state: recievedPackage });
   }
+  useBackButtonHandler();
 
   return (
     <>
@@ -37,7 +38,7 @@ const DeliveryMap = () => {
           icon="keyboard-backspace"
           iconColor={"black"}
           size={35}
-          onPress={() => console.log("<===== <===== <===== <=====")}
+          onPress={() => navigate(-1)}
         />
       </View>
       <ScrollView
@@ -57,6 +58,7 @@ const DeliveryMap = () => {
             <PackageInfo
               item={recievedPackage}
               handlePackageClick={handlePackageClick}
+              displayUpdateIcon={true}
             />
             <MapView style={styles.map} className="mt-4" />
             <DeliveredTimeLine confirmDelivery={confirmDelivery} />

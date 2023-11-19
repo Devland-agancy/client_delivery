@@ -10,19 +10,23 @@ import {
 import { TimePickerModal } from "react-native-paper-dates";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import PackageInfo from "../../components/PackageInfo";
+import { useLocation, useNavigate } from "react-router-native";
+import axios from "./../../API/Axios";
+import Spinner from "../../components/Spinner";
 
 const EditDetails = () => {
-  const [recievedPackage, setRecievedPackage] = useState({
-    id: 4,
-    name: "Iphone 14 pro max",
-    status: "Waiting",
-    adress: "1543 Main street",
-  });
-  function updateDeliveryDetails() {}
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [errMessage, setErrMessage] = useState("");
+  const [recievedPackage, setRecievedPackage] = useState(location.state);
   const [modalVisibility, setmodalVisibility] = useState(false);
   const [visible, setVisible] = useState(false);
   const [hours, setHours] = useState(12);
   const [minutes, setMinutes] = useState(30);
+  const [address, setAddress] = useState("");
+  const [date, setDate] = useState("");
+  const [comment, setComment] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const showModal = () => setmodalVisibility(true);
   const hideModal = () => setmodalVisibility(false);
@@ -47,6 +51,29 @@ const EditDetails = () => {
     [setVisible]
   );
 
+  async function updateDeliveryDetails() {
+    try {
+      setIsProcessing(true);
+      const estimated_time = date + " " + hours + ":" + minutes;
+      const response = await axios.post(
+        `package/change_package_time_address/${location.state?.id}/`,
+        { estimated_time, address },
+        { params: { client_id: location.state?.client?.id } }
+      );
+      if (response.data.success) {
+        console.log("edit details response: ", response.data);
+        setAddress("");
+        setComment("");
+        setDate("");
+        navigate("/home");
+        setIsProcessing(false);
+      }
+    } catch (error) {
+      setIsProcessing(false);
+      setErrMessage("Oops Something went wrong!");
+    }
+  }
+
   function cancelOrder() {
     hideModal();
   }
@@ -59,7 +86,7 @@ const EditDetails = () => {
           icon="keyboard-backspace"
           iconColor={"black"}
           size={35}
-          onPress={() => console.log("<===== <===== <===== <=====")}
+          onPress={() => navigate(-1)}
         />
       </View>
       <ScrollView
@@ -72,8 +99,13 @@ const EditDetails = () => {
         showsHorizontalScrollIndicator={false}
         automaticallyAdjustKeyboardInsets={true}
       >
-        <View className="w-full flex flex-col items-center px-4">
-          <PackageInfo item={recievedPackage} />
+        {isProcessing && <Spinner />}
+        <View
+          className={`${
+            isProcessing && "opacity-30"
+          } w-full flex flex-col items-center px-4`}
+        >
+          <PackageInfo item={recievedPackage} displayUpdateIcon={false} />
           <TextInput
             className="w-full mt-4"
             outlineColor="#79747E"
@@ -82,11 +114,11 @@ const EditDetails = () => {
             label={"Address"}
             placeholder={"Address"}
             returnKeyType="next"
-            // value={value}
-            // onChangeText={(event) => {
-            // onChange(event);
-            // setErrMessage("");
-            // }}
+            value={address}
+            onChangeText={(event) => {
+              setAddress(event);
+              setErrMessage("");
+            }}
             right={
               <TextInput.Icon icon={"map-marker"} size={28} color={"black"} />
             }
@@ -97,13 +129,13 @@ const EditDetails = () => {
             activeOutlineColor="#FF6D00CC"
             mode="outlined"
             label={"Date of Delivery"}
-            placeholder={"MM/DD/YYYY"}
+            placeholder={"YYYY-MM-DD"}
             returnKeyType="next"
-            // value={value}
-            // onChangeText={(event) => {
-            // onChange(event);
-            // setErrMessage("");
-            // }}
+            value={date}
+            onChangeText={(event) => {
+              setDate(event);
+              setErrMessage("");
+            }}
             right={
               <TextInput.Icon icon={"calendar"} size={28} color={"black"} />
             }
@@ -116,11 +148,11 @@ const EditDetails = () => {
             label={"Comment"}
             placeholder={"Write a comment..."}
             returnKeyType="done"
-            // value={value}
-            // onChangeText={(event) => {
-            // onChange(event);
-            // setErrMessage("");
-            // }}
+            value={comment}
+            onChangeText={(event) => {
+              setComment(event);
+              setErrMessage("");
+            }}
             multiline
             numberOfLines={4}
           />
@@ -131,7 +163,6 @@ const EditDetails = () => {
                 <Text className="text-4xl">
                   {hours}:{minutes}
                 </Text>
-                {/* <Text className="text-2xl leading-10"> am</Text> */}
               </View>
             </View>
           </Pressable>
@@ -182,6 +213,7 @@ const EditDetails = () => {
               </View>
             </Modal>
           </Portal>
+          {errMessage && <Text className="text-red-600">{errMessage}</Text>}
           <Button
             className="w-full mt-4 bg-[#FF6D00]"
             mode="contained"

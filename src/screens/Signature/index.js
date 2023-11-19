@@ -4,15 +4,20 @@ import { IconButton, TextInput, Button } from "react-native-paper";
 import PackageInfo from "../../components/PackageInfo";
 import { useLocation, useNavigate } from "react-router-native";
 import axios from "./../../API/Axios";
+import useBackButtonHandler from "../../hooks/useBack";
+import Spinner from "../../components/Spinner";
 
 const Signature = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [recievedPackage, setRecievedPackage] = useState(location.state);
   const [signature, setSignature] = useState("");
+  const [isProcessing, setIsProccessing] = useState(false);
+  const [errMessage, setErrMessage] = useState("");
 
   async function confirmDelivery() {
     try {
+      setIsProccessing(true);
       const response = await axios.post(
         `package/confirm_client_delivery/${location.state.id}/`,
         null,
@@ -20,15 +25,19 @@ const Signature = () => {
       );
       if (response.data.success) {
         setSignature("");
+        setIsProccessing(false);
         navigate("/feedback", { state: location.state });
       }
     } catch (error) {
-      console.log(":::::::::::::::", error);
+      setIsProccessing(false);
+      setErrMessage("Oops something went wrong!");
     }
   }
   function reportProblem() {
     // TODO: handel the report problem
   }
+
+  useBackButtonHandler();
 
   return (
     <>
@@ -38,7 +47,7 @@ const Signature = () => {
           icon="keyboard-backspace"
           iconColor={"black"}
           size={35}
-          onPress={() => console.log("<===== <===== <===== <=====")}
+          onPress={() => navigate(-1)}
         />
       </View>
       <ScrollView
@@ -51,8 +60,13 @@ const Signature = () => {
         showsHorizontalScrollIndicator={false}
         automaticallyAdjustKeyboardInsets={true}
       >
-        <View className="w-full flex flex-col items-center px-4">
-          <PackageInfo item={recievedPackage} />
+        {isProcessing && <Spinner />}
+        <View
+          className={`${
+            isProcessing && "opacity-30"
+          } w-full flex flex-col items-center px-4`}
+        >
+          <PackageInfo item={recievedPackage} displayUpdateIcon={false} />
           <Text className="text-center mt-4">
             Please sign for the package upon delivery and inspect it carefully.
             If there is any damage to the package or its contents, please
@@ -73,8 +87,10 @@ const Signature = () => {
             value={signature}
             onChangeText={(event) => {
               setSignature(event);
+              setErrMessage("");
             }}
           />
+          {errMessage && <Text className="text-red-600">{errMessage}</Text>}
           <Button
             className="w-full mt-12 bg-[#FF6D00]"
             mode="contained"
