@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
+import Toast from "react-native-toast-message";
 import {
   IconButton,
   TextInput,
@@ -57,16 +58,20 @@ const EditDetails = () => {
       const estimated_time = date + " " + hours + ":" + minutes;
       const response = await axios.post(
         `package/change_package_time_address/${location.state?.id}/`,
-        { estimated_time, address },
+        { estimated_time, address, comment },
         { params: { client_id: location.state?.client?.id } }
       );
       if (response.data.success) {
-        console.log("edit details response: ", response.data);
+        setIsProcessing(false);
+        showToast(
+          "success",
+          "Delivery information",
+          "The delivery information updated succesfully👋"
+        );
         setAddress("");
         setComment("");
         setDate("");
-        navigate("/home");
-        setIsProcessing(false);
+        setTimeout(() => navigate("/home"), 1000);
       }
     } catch (error) {
       setIsProcessing(false);
@@ -74,9 +79,36 @@ const EditDetails = () => {
     }
   }
 
-  function cancelOrder() {
-    hideModal();
+  async function cancelOrder() {
+    try {
+      setIsProcessing(true);
+      const response = await axios.get(
+        `package/client_cancel_package/${location.state?.id}/`,
+        { params: { client_id: location.state?.client?.id } }
+      );
+      if (response.data.success) {
+        setIsProcessing(false);
+        showToast(
+          "success",
+          "Delivery information",
+          "The Order was canceled successfully"
+        );
+        setTimeout(() => navigate("/home"), 1000);
+      }
+    } catch (error) {
+      hideModal();
+      setIsProcessing(false);
+      showToast("error", "Delivery information", "Oops Something went wrong!");
+    }
   }
+
+  const showToast = (status, text1, text2) => {
+    Toast.show({
+      type: status,
+      text1,
+      text2,
+    });
+  };
 
   return (
     <>
@@ -89,6 +121,7 @@ const EditDetails = () => {
           onPress={() => navigate(-1)}
         />
       </View>
+      <Toast />
       <ScrollView
         className="w-full"
         contentContainerStyle={{ flexGrow: 1 }}
